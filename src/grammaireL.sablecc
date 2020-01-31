@@ -6,14 +6,139 @@ lettre = [['a' .. 'z'] + ['A' .. 'Z']];
 
 Tokens
 
+id = ['a' .. 'z']['a' .. 'z'-'0' .. '9'];
+nb = ['0' .. '9'];
+po = '(';
+pf = ')';
+vir = ',';
+si = 'si';
+eg = '=';
+min = '-';
+add = '+' ;
+non = '!' ;
+inf = '<' ;
+supp = '>' ;
 espaces = (' ' | 13 | 10)+;
 commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
 
-Ignored Tokens
+ignored tokens
 
 espaces, commentaire;
 
-Productions
+productions
 
+p =
+ldvo ldf
+;
+
+var =
+{entier} id|
+{tableau} id[e]
+;
+
+ldvo =
+{} ldv ';' |
+{}
+;
+
+ldv =
+{} dv ldvb |
+{}
+;
+
+ldvb =
+{} vir dv ldvb |
+{}
+;
+
+
+ldf =
+{} df ldf |
+{}
+;
+
+df =
+id (ldv) ldvo ibloc
+;
+
+e =
+{} e '|' e1 |
+{} e1
+;
+
+e1 =
+{} e1 & e2 |
+{} e2
+;
+
+e2 =
+{} e2 eg e3 |
+{}e2 inf e3 |
+{}e3
+;
+
+e3 =
+{} e3 add e4|
+{} e3 min e4|
+{} e4
+;
+
+e4 =
+{}e4*e5
+|{}e4 / e5|
+{}e5
+;
+
+e5 ={}!e5|
+{}e6
+;
+
+e6 =
+{}(e)|
+{}(e)|
+{}nb|
+{}app|
+{}var|
+{}lire()
+;
+
+i =
+ {}iaff |
+isi |
+itq|
+iapp|
+ibloc|
+iref
+;
+
+iaff =
+var '=' e';'
+;
+
+isi =
+ssi e alors ibloc|
+ssi e alors ibloc sinon ibloc;
+;
+
+iapp =
+app ';'
+iecr =
+ecrire(exp)
+;
+app =
+id(lexp)
+;
+
+dv = {}id |
+{}id[nb]
+;
+
+itq = tantque e faire ibloc
+ibloc = {li}
+li =ilib| ;
+lib = ';'lib | ;
+iret = retour e ';'
+iecr = ecrire(e)';'
+ilire = lire()';'
 programme = optdecvar listedecfonc ;
 

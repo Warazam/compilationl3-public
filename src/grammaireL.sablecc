@@ -18,8 +18,14 @@ add = '+' ;
 non = '!' ;
 inf = '<' ;
 supp = '>' ;
+mul = '*' ;
+div = '/' ;
+non = '!' ;
+ptvir = ';' ;
+pip = '|' ;
+
 espaces = (' ' | 13 | 10)+;
-commentaire= '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
+commentaire = '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
 
 ignored tokens
 
@@ -37,7 +43,7 @@ var =
 ;
 
 ldvo =
-{} ldv ';' |
+{} ldv ptvir |
 {}
 ;
 
@@ -62,7 +68,7 @@ id (ldv) ldvo ibloc
 ;
 
 e =
-{} e '|' e1 |
+{} e pip e1 |
 {} e1
 ;
 
@@ -72,7 +78,7 @@ e1 =
 ;
 
 e2 =
-{} e2 eg e3 |
+{}e2 eg e3 |
 {}e2 inf e3 |
 {}e3
 ;
@@ -84,17 +90,17 @@ e3 =
 ;
 
 e4 =
-{}e4*e5
-|{}e4 / e5|
+{}e4 mul e5|
+{}e4 div e5|
 {}e5
 ;
 
-e5 ={}!e5|
+e5 =
+{}non e5|
 {}e6
 ;
 
 e6 =
-{}(e)|
 {}(e)|
 {}nb|
 {}app|
@@ -103,28 +109,31 @@ e6 =
 ;
 
 i =
- {}iaff |
-isi |
-itq|
-iapp|
-ibloc|
-iref
+{}iaff |
+{}isi |
+{}itq|
+{}iapp|
+{}ibloc|
+{}iref
 ;
 
 iaff =
-var '=' e';'
+var eg e ptvir
 ;
 
 isi =
-ssi e alors ibloc|
-ssi e alors ibloc sinon ibloc;
+{}ssi e alors ibloc|
+{}ssi e alors ibloc sinon ibloc;
 ;
 
 iapp =
-app ';'
+app ptvir
+;
+
 iecr =
 ecrire(exp)
 ;
+
 app =
 id(lexp)
 ;
@@ -133,12 +142,37 @@ dv = {}id |
 {}id[nb]
 ;
 
-itq = tantque e faire ibloc
-ibloc = {li}
-li =ilib| ;
-lib = ';'lib | ;
-iret = retour e ';'
-iecr = ecrire(e)';'
-ilire = lire()';'
-programme = optdecvar listedecfonc ;
+itq =
+tantque e faire ibloc
+;
+
+ibloc =
+{li}
+;
+
+li =
+[}ilib |
+{}
+;
+
+lib =
+{} ptvir lib |
+{}
+;
+
+iret =
+ retour e ptvir
+;
+
+iecr =
+ ecrire(e) ptvir
+;
+
+ilire =
+lire() ptvir
+;
+
+programme =
+optdecvar listedecfonc
+;
 

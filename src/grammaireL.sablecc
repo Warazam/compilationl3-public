@@ -3,11 +3,13 @@ Package sc;
 Helpers
 
 lettre = [['a' .. 'z'] + ['A' .. 'Z']];
+alphanum = [lettre + ['_' + '$']];
+nb = ['0' .. '9'];
 
 Tokens
 
-id = ['a' .. 'z']['a' .. 'z'-'0' .. '9'];
 nb = ['0' .. '9'];
+id = [lettre + nb];
 po = '(';
 pf = ')';
 vir = ',';
@@ -20,110 +22,126 @@ inf = '<' ;
 supp = '>' ;
 mul = '*' ;
 div = '/' ;
-non = '!' ;
 ptvir = ';' ;
 pip = '|' ;
-
+alors = 'alors';
+sinon = 'sinon';
+tantque = 'tantque';
+faire = 'faire';
+entier = 'entier';
+retour = 'retour';
+lire = 'lire';
+ecrire = 'ecrire';
+nombre = nb+;
+crochet_ouvrant = '[';
+crochet_fermant = ']';
+accolade_ouvrante = '{';
+accolade_fermante = '}';
 espaces = (' ' | 13 | 10)+;
 commentaire = '#' [[0 .. 0xffff] - [10 + 13]]* (10 | 13 | 10 13);
+et = '&';
 
-ignored tokens
+Ignored Tokens
 
 espaces, commentaire;
 
-productions
+Productions
 
 p =
 ldvo ldf
 ;
 
 var =
-{entier} id|
-{tableau} id[e]
+{entier} id |
+{tableau} id crochet_ouvrant e crochet_fermant
 ;
 
 ldvo =
-{} ldv ptvir |
-{}
+{a} ldv ptvir |
+{b}
 ;
 
 ldv =
-{} dv ldvb |
-{}
+{c} dv ldvb |
+{d}
 ;
 
 ldvb =
-{} vir dv ldvb |
-{}
+{e} vir dv ldvb |
+{f}
 ;
 
 
 ldf =
-{} df ldf |
-{}
+{g} df ldf |
+{h}
 ;
 
 df =
-id (ldv) ldvo ibloc
+id po ldv pf ldvo ibloc
 ;
 
 e =
-{} e pip e1 |
-{} e1
+{i} e pip e1 |
+{j} e1
 ;
 
 e1 =
-{} e1 & e2 |
-{} e2
+{k} e1 et e2 |
+{l} e2
 ;
 
 e2 =
-{}e2 eg e3 |
-{}e2 inf e3 |
-{}e3
+{m}e2 eg e3 |
+{n}e2 inf e3 |
+{o}e3
 ;
 
 e3 =
-{} e3 add e4|
-{} e3 min e4|
-{} e4
+{p} e3 add e4|
+{q} e3 min e4|
+{r} e4
 ;
 
 e4 =
-{}e4 mul e5|
-{}e4 div e5|
-{}e5
+{s}e4 mul e5|
+{t}e4 div e5|
+{u}e5
 ;
 
 e5 =
-{}non e5|
-{}e6
+{v}non e5|
+{w}e6
 ;
 
 e6 =
-{}(e)|
-{}nb|
-{}app|
-{}var|
-{}lire()
+{x}po e pf|
+{y}nb|
+{z}app|
+{aa}var|
+{ab}lire po pf
 ;
 
 i =
-{}iaff |
-{}isi |
-{}itq|
-{}iapp|
-{}ibloc|
-{}iref
+{ac}iaff |
+{ad}isi |
+{ae}itq|
+{af}iapp|
+{ag}ibloc|
+{ah}iret
 ;
 
 iaff =
 var eg e ptvir
 ;
 
+ibloc =
+accolade_ouvrante li accolade_fermante
+;
+
 isi =
-{}ssi e alors ibloc|
-{}ssi e alors ibloc sinon ibloc;
+{ai} si e alors ibloc |
+{aj} si e alors [i1]:ibloc sinon [i2]:ibloc
 ;
 
 iapp =
@@ -131,48 +149,40 @@ app ptvir
 ;
 
 iecr =
-ecrire(exp)
+ecrire po e pf
 ;
 
 app =
-id(lexp)
+id po e pf
 ;
 
-dv = {}id |
-{}id[nb]
+dv =
+{aq}id |
+{ak}id crochet_ouvrant nb crochet_fermant
 ;
 
 itq =
 tantque e faire ibloc
 ;
 
-ibloc =
-{li}
-;
-
 li =
-[}ilib |
-{}
+{al}lib |
+{am}
 ;
 
 lib =
-{} ptvir lib |
-{}
+{an} ptvir lib |
+{ao}
 ;
 
 iret =
  retour e ptvir
 ;
 
-iecr =
- ecrire(e) ptvir
-;
 
 ilire =
-lire() ptvir
+lire po pf ptvir
 ;
 
-programme =
-optdecvar listedecfonc
-;
+
 

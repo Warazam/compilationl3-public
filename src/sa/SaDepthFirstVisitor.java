@@ -72,25 +72,73 @@ public class SaDepthFirstVisitor <T> implements SaVisitor <T>{
     {
     }
 
-    // P -> LDEC LDEC 
-    public T visit(SaProg node)
-    {
-	defaultIn(node);
-	if(node.getVariables() != null)
-	    node.getVariables().accept(this);
-	if(node.getFonctions() != null)
-	    node.getFonctions().accept(this);
-	defaultOut(node);
-	return null;
-    }
-    
-    // DEC -> var id taille 
-    public T visit(SaDecTab node){
-	defaultIn(node);
-	defaultOut(node);
-	return null;
-    }
-    
+
+	// DEC -> var id
+	// TODO
+	public T visit(SaDecVar node)
+	{
+		defaultIn(node);
+		defaultOut(node);
+		return null;
+	}
+	// DEC -> var id taille
+	//TODO
+	public T visit(SaDecTab node){
+		defaultIn(node);
+		defaultOut(node);
+		return null;
+	}
+
+	// DEC -> fct id LDEC LDEC LINST
+	// TODO
+	public T visit(SaDecFonc node)
+	{
+		defaultIn(node);
+		if(node.getParametres() != null) node.getParametres().accept(this);
+		if(node.getVariable() != null) node.getVariable().accept(this);
+		node.getCorps().accept(this);
+		defaultOut(node);
+		return null;
+	}
+
+
+	//TODO
+	public T visit(SaVarSimple node)
+	{
+		defaultIn(node);
+		defaultOut(node);
+		return null;
+	}
+
+
+	//TODO
+	public T visit(SaVarIndicee node)
+	{
+		defaultIn(node);
+		node.getIndice().accept(this);
+		defaultOut(node);
+		return null;
+	}
+	//TODO
+	public T visit(SaAppel node)
+	{
+		defaultIn(node);
+		if(node.getArguments() != null) node.getArguments().accept(this);
+		defaultOut(node);
+		return null;
+	}
+
+	// P -> LDEC LDEC
+	public T visit(SaProg node)
+	{
+		defaultIn(node);
+		if(node.getVariables() != null)
+			node.getVariables().accept(this);
+		if(node.getFonctions() != null)
+			node.getFonctions().accept(this);
+		defaultOut(node);
+		return null;
+	}
     public T visit(SaExp node)
     {
 	defaultIn(node);
@@ -129,6 +177,7 @@ public class SaDepthFirstVisitor <T> implements SaVisitor <T>{
 	defaultOut(node);
 	return null;
     }
+
     public T visit(SaLInst node)
     {
 	defaultIn(node);
@@ -138,24 +187,6 @@ public class SaDepthFirstVisitor <T> implements SaVisitor <T>{
 	return null;
     }
 
-    // DEC -> fct id LDEC LDEC LINST 
-    public T visit(SaDecFonc node)
-    {
-	defaultIn(node);
-	if(node.getParametres() != null) node.getParametres().accept(this);
-	if(node.getVariable() != null) node.getVariable().accept(this);
-	node.getCorps().accept(this);
-	defaultOut(node);
-	return null;
-    }
-    
-    // DEC -> var id 
-    public T visit(SaDecVar node)
-    {
-	defaultIn(node);
-	defaultOut(node);
-	return null;
-    }
     
     public T visit(SaInstAffect node)
     {
@@ -176,21 +207,8 @@ public class SaDepthFirstVisitor <T> implements SaVisitor <T>{
 	defaultOut(node);
 	return null;
     }
-    
-    public T visit(SaVarSimple node)
-    {
-	defaultIn(node);
-	defaultOut(node);
-	return null;
-    }
-    
-    public T visit(SaAppel node)
-    {
-	defaultIn(node);
-	if(node.getArguments() != null) node.getArguments().accept(this);
-	defaultOut(node);
-	return null;
-    }
+
+
     
     public T visit(SaExpAppel node)
     {
@@ -335,12 +353,6 @@ public class SaDepthFirstVisitor <T> implements SaVisitor <T>{
 	defaultOut(node);
 	return null;
     }
-    public T visit(SaVarIndicee node)
-    {
-	defaultIn(node);
-	node.getIndice().accept(this);
-	defaultOut(node);
-	return null;
-    }
+
     
 }

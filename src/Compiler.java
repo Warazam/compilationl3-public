@@ -1,4 +1,5 @@
 import c3a.C3a;
+import fg.Fg;
 import nasm.Nasm;
 import sa.Sa2Xml;
 import sa.SaNode;
@@ -8,11 +9,11 @@ import sc.node.*;
 import ts.Ts;
 
 import java.io.*;
-//import sa.*;
-//import ts.*;
-//import c3a.*;
-//import nasm.*;
-//import fg.*;
+import sa.*;
+import ts.*;
+import c3a.*;
+import nasm.*;
+import fg.*;
 
 public class Compiler
 {
@@ -58,11 +59,11 @@ public class Compiler
 	    System.out.println("[NASM]");
 	    Nasm nasm = new C3a2nasm(c3a, table).getNasm();
 	    nasm.affiche(baseName);
-/*
+
 	    System.out.println("[FLOW GRAPH]");
 	    Fg fg = new Fg(nasm);
 	    fg.affiche(baseName);
-
+/*
 	    System.out.println("[FLOW GRAPH SOLVE]");
 	    FgSolution fgSolution = new FgSolution(nasm, fg);
 	    fgSolution.affiche(baseName);*/

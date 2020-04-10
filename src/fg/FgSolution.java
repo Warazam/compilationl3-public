@@ -21,7 +21,86 @@ public class FgSolution{
 	this.def = new HashMap< NasmInst, IntSet>();
 	this.in =  new HashMap< NasmInst, IntSet>();
 	this.out = new HashMap< NasmInst, IntSet>();
+		initialize();
+		createIO();
     }
+
+	private void initialize(){
+		for (NasmInst inst : nasm.listeInst) {
+			IntSet useIntSet = new IntSet(20);
+			IntSet defIntSet = new IntSet(20);
+
+			in.put(inst, new IntSet(20));
+			out.put(inst, new IntSet(20));
+
+			if(inst.srcDef && inst.srcUse && inst.source.isGeneralRegister())
+				useIntSet.add(((NasmRegister)inst.source).val);
+
+			if(inst.srcDef && inst.source instanceof NasmAddress){
+				NasmAddress addr = (NasmAddress) inst.source;
+
+				if(addr.isGeneralRegister())
+					useIntSet.add(((NasmRegister)addr.offset).val);
+			}
+
+			if(inst.destDef && inst.destUse && inst.destination.isGeneralRegister())
+				useIntSet.add(((NasmRegister)inst.destination).val);
+
+			if(inst.destDef && inst.destination.isGeneralRegister())
+				defIntSet.add(((NasmRegister)inst.destination).val);
+
+			use.put(inst,useIntSet);
+			def.put(inst,defIntSet);
+		}
+	}
+
+	private void createIO(){
+
+		Map< NasmInst, IntSet> inP = new HashMap<>(in.size());
+		Map< NasmInst, IntSet> outP = new HashMap<>(out.size());
+
+		for(NasmInst inst : nasm.listeInst){
+			inP.put(inst, new IntSet(20));
+			outP.put(inst, new IntSet(20));
+		}
+
+		iterNum = -1;
+		boolean test;
+
+		do {
+			iterNum++;
+
+			for(NasmInst s : nasm.listeInst) {
+
+				inP.replace(s, in.get(s));
+				outP.replace(s, out.get(s));
+
+				IntSet useS = use.get(s).copy();
+				IntSet outS = out.get(s).copy();
+				IntSet defS = def.get(s).copy();
+
+				in.replace(s, useS.union(outS.minus(defS)));
+
+				Node nodes = fg.inst2Node.get(s);
+				NodeList succ = nodes.succ();
+
+				while(succ != null) {
+					NasmInst succInst = fg.node2Inst.get(succ.head);
+					out.replace(succInst, out.get(succInst).union(in.get(s)));
+					succ = succ.tail;
+				}
+			}
+
+			test = true;
+
+			for(NasmInst s : nasm.listeInst) {
+				if(!(in.get(s).equal(inP.get(s))))
+					test = false;
+				if(!(out.get(s).equal(outP.get(s))))
+					test = false;
+			}
+		} while(!test);
+	}
     
     public void affiche(String baseFileName){
 	String fileName;

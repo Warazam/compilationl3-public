@@ -17,6 +17,13 @@ public class Fg implements NasmVisitor <Void> {
 	this.node2Inst = new HashMap< Node, NasmInst>();
 	this.label2Inst = new HashMap< String, NasmInst>();
 	this.graph = new Graph();
+
+        for (NasmInst inst : nasm.listeInst)
+            createNode(inst);
+
+        Node node = null;
+        for (NasmInst inst : nasm.listeInst)
+            node = createArc(inst, node);
     }
 
     public void affiche(String baseFileName){
@@ -43,7 +50,36 @@ public class Fg implements NasmVisitor <Void> {
 		out.print(" ");
 	    }
 	    out.println(")\t" + nasmInst);
-	}
+	    }
+    }
+
+    private void createNode(NasmInst inst) {
+        Node node = graph.newNode();
+        inst2Node.put(inst, node);
+        node2Inst.put(node, inst);
+        if (inst.label != null)
+            label2Inst.put(inst.label.toString(), inst);
+    }
+
+    private Node createArc(NasmInst inst, Node previousNode) {
+        Node node = inst2Node.get(inst);
+
+        if(inst.address != null){
+            NasmInst inst1 = label2Inst.get(inst.address.toString());
+            if( inst1 != null)
+                graph.addEdge(node, inst2Node.get(inst1));
+        }
+
+        if(previousNode != null)
+            graph.addEdge(previousNode, node);
+
+        if(inst.address != null && inst.address.toString().equals("iprintLF"))
+            return null;
+
+        if(inst instanceof NasmRet || inst instanceof NasmJmp)
+            return null;
+
+        return node;
     }
     
     public Void visit(NasmAdd inst){return null;}
